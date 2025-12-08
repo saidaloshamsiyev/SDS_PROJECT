@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class TranscriptionService {
+public class GroqService implements TranscriptionStrategy {
 
     private final VoiceMessageRepository voiceMessageRepository;
 
@@ -36,8 +36,8 @@ public class TranscriptionService {
     @Value("${openai.api.model}")
     private String apiModel;
 
-
-    public VoiceMessage transcribeAudio(MultipartFile audioFile) throws IOException {
+    @Override
+    public VoiceMessage transcribeAudio(MultipartFile audioFile) {
         File convFile = convertMultiPartToFile(audioFile);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -50,6 +50,10 @@ public class TranscriptionService {
         body.add("file", new FileSystemResource(convFile));
         body.add("model", apiModel);
         body.add("language", "uz");
+        body.add("temperature", 0);
+
+        String contextPrompt = "Ushbu audio yozuv o'zbek tilida. Iltimos, so'zlarni to'g'ri va imlo qoidalariga rioya qilgan holda yozing.";
+        body.add("prompt", contextPrompt);
 
 
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
@@ -73,10 +77,18 @@ public class TranscriptionService {
 
     }
 
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+
+    @Override
+    public String getProviderName() {
+        return "groq";
+    }
+
+    private File convertMultiPartToFile(MultipartFile file)  {
         File conFile = new File(System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename());
         try (FileOutputStream fos = new FileOutputStream(conFile)) {
             fos.write(file.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return conFile;
     }
