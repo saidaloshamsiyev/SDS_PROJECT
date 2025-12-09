@@ -1,8 +1,9 @@
-package org.example.sds_project.service;
+package org.example.sds_project.service.aiservice;
 
 import lombok.RequiredArgsConstructor;
 import org.example.sds_project.entity.VoiceMessage;
 import org.example.sds_project.repository.VoiceMessageRepository;
+import org.example.sds_project.service.stratagey.TranscriptionStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,7 +43,6 @@ public class GeminiService implements TranscriptionStrategy {
             String finalUrl = clearApiUrl + "?key=" + clearApiKey;
 
 
-
             String base64Audio = Base64.getEncoder().encodeToString(multipartFile.getBytes());
 
             String mimeType = multipartFile.getContentType();
@@ -59,9 +59,21 @@ public class GeminiService implements TranscriptionStrategy {
             Map<String, Object> audioPart = new HashMap<>();
             audioPart.put("inline_data", inlineData);
 
+            String prompt = """
+                    Sen professional o'zbek tili muharririsiz. Quyidagi audio faylni tingla va undagi nutqni matnga aylantir.
+                    
+                    Quyidagi qoidalarga qat'iy rioya qil:
+                    1. Faqat va faqat audiodagi gaplarni yoz. Ortiqcha izoh (masalan "Audio mazmuni", "Suhbat tugadi") qo'shma.
+                    2. Agar gap shevada bo'lsa, uni adabiy o'zbek tiliga moslashtirib yoz (masalan: "kelyapman" deb yoz, "kevotman" emas).
+                    3. Imlo xatolarini va tinish belgilarini (nuqta, vergul) to'g'ri qo'y.
+                    4. Agar audioda ruscha yoki inglizcha terminlar bo'lsa, ularni o'z holicha to'g'ri yoz.
+                    
+                    Natijani faqat matn ko'rinishida chiqar.
+                    """;
+
 
             Map<String, Object> textPart = new HashMap<>();
-            textPart.put("text", "Ushbu audio o'zbek tilida. Uni matnga aylantirib ber. Faqat matnni o'zini yoz.");
+            textPart.put("text", prompt);
 
             Map<String, Object> content = new HashMap<>();
             content.put("parts", List.of(textPart, audioPart));

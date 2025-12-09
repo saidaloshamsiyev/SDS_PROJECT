@@ -1,8 +1,9 @@
-package org.example.sds_project.service;
+package org.example.sds_project.service.aiservice;
 
 import lombok.RequiredArgsConstructor;
 import org.example.sds_project.entity.VoiceMessage;
 import org.example.sds_project.repository.VoiceMessageRepository;
+import org.example.sds_project.service.stratagey.TranscriptionStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

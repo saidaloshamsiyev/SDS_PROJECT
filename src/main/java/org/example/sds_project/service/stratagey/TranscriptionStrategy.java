@@ -1,4 +1,4 @@
-package org.example.sds_project.service;
+package org.example.sds_project.service.stratagey;
 
 import org.example.sds_project.entity.VoiceMessage;
 import org.springframework.stereotype.Service;

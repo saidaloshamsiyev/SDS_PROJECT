@@ -1,5 +1,6 @@
-package org.example.sds_project.service;
+package org.example.sds_project.service.factory;
 
+import org.example.sds_project.service.stratagey.TranscriptionStrategy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
